@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDORIENTADO - Orientación Escolar Integral</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Alpine.js para interactividad reactiva ligera -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased" x-data="appData()">
+
+    <!-- TOP BAR & ACCESIBILIDAD -->
+    <div class="bg-blue-900 text-white text-xs py-2 px-4 flex justify-between items-center class= hidden md:flex">
+        <div><i class="fas fa-graduation-cap class= mr-2"></i> Un espacio digital para el desarrollo integral educativo
+        </div>
+        <div class="flex gap-4">
+            <button @click="toggleAccesibilidad()" class="hover:underline cursor-pointer"><i
+                    class="fas fa-universal-access mr-1"></i> Contraste Alto</button>
+            <span><i class="fas fa-envelope mr-1"></i> contacto@rdorientado.edu.do</span>
+        </div>
+    </div>
+
+    <!-- HEADER & NAVEGACIÓN -->
+    <header class="bg-white/95 backdrop-blur shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="#" @click.prevent="currentSection = 'inicio'" class="flex items-center space-x-2 group">
+                <div
+                    class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md group-hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-compass text-xl animate-spin-slow"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-bold text-blue-900 tracking-tight block">RD<span
+                            class="text-blue-600">ORIENTADO</span></span>
+                    <span class="text-[10px] uppercase tracking-widest text-slate-500 block -mt-1">Orientación
+                        Escolar</span>
+                </div>
+            </a>
+
+            <!-- Nav Desktop -->
+            <nav class="hidden lg:flex items-center space-x-1">
+                <template x-for="item in navItems">
+                    <button @click="currentSection = item.id"
+                        :class="currentSection === item.id ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'"
+                        class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer"
+                        x-text="item.name">
+                    </button>
+                </template>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button @click="mobileMenu = !mobileMenu"
+                class="lg:hidden text-slate-600 hover:text-blue-600 focus:outline-none p-2">
+                <i class="fas" :class="mobileMenu ? 'fa-times text-xl' : 'fa-bars text-xl'"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div x-show="mobileMenu" x-transition
+            class="lg:hidden bg-white border-t border-slate-100 px-4 py-3 space-y-1 shadow-inner">
+            <template x-for="item in navItems">
+                <button @click="currentSection = item.id; mobileMenu = false"
+                    :class="currentSection === item.id ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-600'"
+                    class="block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium transition-colors"
+                    x-text="item.name">
+                </button>
+            </template>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT SECTIONS -->
+    <main class="min-h-[75vh]">
+
+        <!-- INICIO -->
+        <section x-show="currentSection === 'inicio'" x-transition.opacity.duration.300ms>
+            <!-- Hero -->
+            <div
+                class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-950 text-white py-20 lg:py-32 overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80')] bg-cover bg-center mix-blend-overlay opacity-15">
+                </div>
+                <div class="container mx-auto px-4 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 max-w-2xl">
+                        <span
+                            class="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider inline-block">Innovación
+                            Educativa</span>
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                            Orientamos caminos, acompañamos decisiones
+                        </h1>
+                        <p class="text-lg md:text-xl text-blue-100 font-light leading-relaxed">
+                            Bienvenido a <span class="font-semibold text-white">RDORIENTADO</span>. Un espacio digital e
+                            interactivo creado para guiar, fortalecer y acompañar a estudiantes, familias y docentes en
+                            el trayecto hacia el desarrollo integral.
+                        </p>
+                        <div class="flex flex-wrap gap-4 pt-2">
+                            <button @click="currentSection = 'recursos'"
+                                class="bg-white text-blue-900 hover:bg-blue-50 font-semibold px-6 py-3 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer">
+                                Explorar Recursos <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                            <button @click="currentSection = 'contacto'"
+                                class="border-2 border-white/30 hover:border-white text-white font-semibold px-6 py-3 rounded-xl transition-all cursor-pointer">
+                                Solicitar Orientación
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hidden lg:flex justify-center relative">
+                        <div class="w-80 h-80 bg-blue-600/30 rounded-full absolute -top-10 -left-10 blur-3xl"></div>
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
+                            alt="Estudiantes conectados"
+                            class="rounded-2xl shadow-2xl border-4 border-white/10 w-full max-w-md object-cover h-96 transform hover:scale-[1.02] transition-transform duration-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accesos Directos por Roles -->
+            <div class="container mx-auto px-4 -mt-12 relative z-20">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div @click="currentSection = 'estudiantes'"
+                        class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all group cursor-pointer">
+                        <div
+                            class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-user-graduate text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Espacio Estudiantes</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">Descubre tu vocación, optimiza tus
+                            técnicas de estudio y encuentra herramientas para tu crecimiento emocional.</p>
+                        <span
+                            class="text-emerald-600 text-sm font-semibold inline-flex items-center group-hover:translate-x-1 transition-transform">Entrar
+                            al espacio <i class="fas fa-chevron-right ml-1 text-xs"></i></span>
+                    </div>
+
+                    <div @click="currentSection = 'familias'"
+                        class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all group cursor-pointer">
+                        <div
+                            class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-5 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Espacio Familias</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">Pautas de crianza, resolución de
+                            conflictos en casa y guías prácticas para involucrarte en el éxito de tus hijos.</p>
+                        <span
+                            class="text-amber-600 text-sm font-semibold inline-flex items-center group-hover:translate-x-1 transition-transform">Entrar
+                            al espacio <i class="fas fa-chevron-right ml-1 text-xs"></i></span>
+                    </div>
+
+                    <div @click="currentSection = 'docentes'"
+                        class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all group cursor-pointer">
+                        <div
+                            class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Espacio Docentes</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">Estrategias de convivencia escolar,
+                            dinámicas grupales y herramientas digitales pedagógicas de apoyo.</p>
+                        <span
+                            class="text-blue-600 text-sm font-semibold inline-flex items-center group-hover:translate-x-1 transition-transform">Entrar
+                            al espacio <i class="fas fa-chevron-right ml-1 text-xs"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Destacado del Mes -->
+            <div class="container mx-auto px-4 py-20">
+                <div
+                    class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 md:p-12 border border-blue-100/50 flex flex-col lg:flex-row items-center gap-8">
+                    <div class="space-y-4 flex-1">
+                        <span
+                            class="text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-100 px-3 py-1 rounded-full">Recurso
+                            Recomendado</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-slate-900">Guía de Orientación Vocacional 2026
+                        </h3>
+                        <p class="text-slate-600 leading-relaxed">¿Aún no decides qué carrera universitaria o técnica
+                            elegir? Hemos diseñado este cuaderno interactivo para ayudarte a descubrir tus habilidades,
+                            pasiones y planificar tu proyecto de vida de forma inteligente.</p>
+                        <button @click="currentSection = 'biblioteca'"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm shadow-md transition-colors cursor-pointer">
+                            <i class="fas fa-download mr-2"></i> Descargar Guía Gratis (PDF)
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/3 flex justify-center">
+                        <div
+                            class="bg-white p-4 rounded-2xl shadow-md rotate-3 hover:rotate-0 transition-transform duration-300 border border-slate-100 max-w-[240px]">
+                            <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80"
+                                class="rounded-lg mb-2 h-40 w-full object-cover" alt="Cover Guia">
+                            <p class="text-xs font-bold text-slate-800 text-center">Proyecto de Vida & Futuro</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOBRE RDORIENTADO -->
+        <section x-show="currentSection === 'sobre-nosotros'" x-transition.opacity.duration.300ms
+            class="py-16 container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Construyendo una Comunidad Sólida</h2>
+                <p class="text-slate-600 text-lg">RDORIENTADO es una iniciativa digital comprometida con el desarrollo
+                    integral, ofreciendo apoyo psicosocial y pedagógico de libre acceso.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
+                <div>
+                    <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80"
+                        alt="Equipo orientadores" class="rounded-2xl shadow-xl w-full h-80 object-cover">
+                </div>
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-bold text-slate-900">Nuestra Filosofía</h3>
+                    <p class="text-slate-600 leading-relaxed">Entendemos la orientación escolar como una columna
+                        vertebral del sistema educativo, un puente que conecta el potencial de cada estudiante con sus
+                        metas y aspiraciones más profundas.</p>
+                    <div class="border-l-4 border-blue-600 pl-4 italic text-slate-700 font-medium">
+                        "Construimos futuros dotando hoy a las comunidades de herramientas emocionales y académicas
+                        claras."
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-100">
+                    <h4 class="font-bold text-blue-900 text-xl mb-3"><i class="fas fa-eye text-blue-600 mr-2"></i>
+                        Visión</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">Ser el portal de orientación educativa de
+                        referencia a nivel nacional, reconocido por la excelencia e innovación de sus recursos
+                        prácticos.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-100">
+                    <h4 class="font-bold text-blue-900 text-xl mb-3"><i class="fas fa-bullseye text-blue-600 mr-2"></i>
+                        Misión</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">Fortalecer el ecosistema educativo mediante el
+                        acompañamiento psicopedagógico continuo y contenidos interactivos estructurados.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-100">
+                    <h4 class="font-bold text-blue-900 text-xl mb-3"><i class="fas fa-heart text-blue-600 mr-2"></i>
+                        Valores</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">Empatía, Confidencialidad, Rigor Profesional,
+                        Innovación Tecnológica, Inclusión y Compromiso Social.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECURSOS EDUCATIVOS (DINÁMICO CON FILTROS Y BUSCADOR) -->
+        <section x-show="currentSection === 'recursos'" x-transition.opacity.duration.300ms
+            class="py-16 container mx-auto px-4">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-blue-900">Recursos Educativos</h2>
+                    <p class="text-slate-600 text-sm mt-1">Explora actividades, dinámicas e infografías diseñadas por
+                        profesionales.</p>
+                </div>
+                <!-- Buscador -->
+                <div class="relative w-full md:w-72">
+                    <i class="fas fa-search absolute left-3 top-3.5 text-slate-400 text-sm"></i>
+                    <input type="text" x-model="searchQuery" placeholder="Buscar material..."
+                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                </div>
+            </div>
+
+            <!-- Categorías (Filtros Horizontales) -->
+            <div class="flex flex-wrap gap-2 mb-8 overflow-x-auto pb-2">
+                <button @click="selectedCategory = 'todos'"
+                    :class="selectedCategory === 'todos' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+                    class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer">Todos</button>
+                <template x-for="cat in categories">
+                    <button @click="selectedCategory = cat"
+                        :class="selectedCategory === cat ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+                        class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+                        x-text="cat"></button>
+                </template>
+            </div>
+
+            <!-- Grid de Tarjetas de Recursos -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <template x-for="item in filteredRecursos()" :key="item.id">
+                    <div
+                        class="bg-white rounded-2xl shadow border border-slate-100 overflow-hidden hover:shadow-xl transition-all flex flex-col">
+                        <div class="p-5 flex-1">
+                            <span
+                                class="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-md block w-max mb-3"
+                                x-text="item.category"></span>
+                            <h4 class="font-bold text-slate-900 text-lg mb-2" x-text="item.title"></h4>
+                            <p class="text-slate-600 text-xs leading-relaxed" x-text="item.description"></p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-medium"><i class="fas fa-eye mr-1"></i> Contenido
+                                Web</span>
+                            <button @click="openModal(item)"
+                                class="text-blue-600 hover:text-blue-800 text-xs font-bold inline-flex items-center cursor-pointer">Leer
+                                Más <i class="fas fa-chevron-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <!-- Empty State -->
+            <div x-show="filteredRecursos().length === 0"
+                class="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
+                <i class="fas fa-folder-open text-slate-300 text-4xl mb-3"></i>
+                <p class="text-slate-500 text-sm">No encontramos recursos que coincidan con tu búsqueda.</p>
+            </div>
+        </section>
+
+        <!-- BIBLIOTECA DIGITAL -->
+        <section x-show="currentSection === 'biblioteca'" x-transition.opacity.duration.300ms
+            class="py-16 bg-slate-100/60 shadow-inner">
+            <div class="container mx-auto px-4">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold text-blue-900">Biblioteca Digital</h2>
+                    <p class="text-slate-600 text-sm">Documentos oficiales, guías imprimibles y herramientas de trabajo
+                        descargables.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="doc in bibliotecaDocs">
+                        <div
+                            class="bg-white p-6 rounded-2xl shadow border border-slate-100 flex flex-col justify-between hover:border-blue-200 transition-colors">
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <span
+                                        class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded"
+                                        x-text="doc.category"></span>
+                                    <span
+                                        class="text-xs text-slate-400 font-bold uppercase border border-slate-200 px-1.5 py-0.5 rounded"
+                                        x-text="doc.type"></span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-base mb-1" x-text="doc.title"></h4>
+                                <p class="text-slate-500 text-xs leading-relaxed mb-4" x-text="doc.description"></p>
+                            </div>
+                            <a :href="doc.link"
+                                class="w-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors text-center text-xs font-bold py-2.5 rounded-xl inline-flex items-center justify-center gap-2">
+                                <i class="fas fa-download"></i> Descargar Documento
+                            </a>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        <!-- MULTIMEDIA -->
+        <section x-show="currentSection === 'multimedia'" x-transition.opacity.duration.300ms
+            class="py-16 container mx-auto px-4">
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-900">Galería Multimedia</h2>
+                <p class="text-slate-600 text-sm">Cápsulas de orientación en video, talleres y evidencias de nuestras
+                    actividades grupales.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Video Item Simulation -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow group">
+                    <div class="relative bg-slate-900 aspect-video flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
+                            class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-300"
+                            alt="Video">
+                        <button
+                            class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-blue-700 transition-colors z-10 cursor-pointer">
+                            <i class="fas fa-play ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <span class="text-[10px] uppercase font-bold text-red-500"><i class="fas fa-video mr-1"></i>
+                            Cápsula Educativa</span>
+                        <h4 class="font-bold text-sm text-slate-900 mt-1">Manejo de la Ansiedad ante los Exámenes</h4>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 1 -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow group">
+                    <div class="relative aspect-video">
+                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            alt="Taller">
+                    </div>
+                    <div class="p-4">
+                        <span class="text-[10px] uppercase font-bold text-blue-600"><i class="fas fa-camera mr-1"></i>
+                            Fotografía</span>
+                        <h4 class="font-bold text-sm text-slate-900 mt-1">Taller de Proyecto de Vida con Estudiantes de
+                            Secundaria</h4>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow group">
+                    <div class="relative aspect-video">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            alt="Convivencia">
+                    </div>
+                    <div class="p-4">
+                        <span class="text-[10px] uppercase font-bold text-emerald-600"><i
+                                class="fas fa-images mr-1"></i> Álbum</span>
+                        <h4 class="font-bold text-sm text-slate-900 mt-1">Jornada de Convivencia Escolar y Cultura de
+                            Paz</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLOG -->
+        <section x-show="currentSection === 'blog'" x-transition.opacity.duration.300ms
+            class="py-16 container mx-auto px-4">
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl font-bold text-blue-900">Blog de Orientación & Bienestar</h2>
+                <p class="text-slate-600 text-sm mt-1">Artículos de opinión, consejos técnicos y lecturas de interés
+                    general.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <article
+                    class="bg-white rounded-2xl shadow overflow-hidden border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&q=80"
+                            class="h-48 w-full object-cover" alt="Blog post">
+                        <div class="p-5">
+                            <span class="text-xs text-slate-400 font-medium">25 Junio, 2026</span>
+                            <h3
+                                class="font-bold text-slate-900 text-lg mt-1 mb-2 hover:text-blue-600 transition-colors">
+                                Uso Inteligente de las Redes Sociales en la Adolescencia</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed">Pautas preventivas para guiar a los
+                                jóvenes hacia una ciudadanía digital responsable, minimizando riesgos de ciberacoso.</p>
+                        </div>
+                    </div>
+                    <div class="p-5 border-t border-slate-50">
+                        <a href="#" class="text-blue-600 font-bold text-xs hover:underline">Leer artículo completo</a>
+                    </div>
+                </article>
+
+                <article
+                    class="bg-white rounded-2xl shadow overflow-hidden border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80"
+                            class="h-48 w-full object-cover" alt="Blog post">
+                        <div class="p-5">
+                            <span class="text-xs text-slate-400 font-medium">18 Junio, 2026</span>
+                            <h3
+                                class="font-bold text-slate-900 text-lg mt-1 mb-2 hover:text-blue-600 transition-colors">
+                                Cómo Crear un Espacio de Estudio Óptimo en el Hogar</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed">El entorno físico afecta directamente el
+                                rendimiento académico. Te mostramos cómo adecuar un rincón sin grandes inversiones.</p>
+                        </div>
+                    </div>
+                    <div class="p-5 border-t border-slate-50">
+                        <a href="#" class="text-blue-600 font-bold text-xs hover:underline">Leer artículo completo</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ROLES SPECIFIC SPACES (ESTUDIANTES, FAMILIAS, DOCENTES) -->
+        <section x-show="['estudiantes', 'familias', 'docentes'].includes(currentSection)"
+            x-transition.opacity.duration.300ms class="py-16 container mx-auto px-4">
+            <!-- Dinámico según el rol seleccionado -->
+            <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-slate-100">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+                        :class="currentSection === 'estudiantes' ? 'bg-emerald-50 text-emerald-600' : currentSection === 'familias' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'">
+                        <i class="fas"
+                            :class="currentSection === 'estudiantes' ? 'fa-user-graduate' : currentSection === 'familias' ? 'fa-users' : 'fa-chalkboard-teacher'"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-900"
+                            x-text="'Comunidad: ' + currentSection.charAt(0).toUpperCase() + currentSection.slice(1)">
+                        </h2>
+                        <p class="text-slate-500 text-sm">Contenido especializado pensado exclusivamente para ti.</p>
+                    </div>
+                </div>
+                <hr class="border-slate-100 my-6">
+
+                <!-- Contenido Variable según Rol -->
+                <div x-show="currentSection === 'estudiantes'" class="space-y-6">
+                    <p class="text-slate-600">Este es tu rincón seguro. Aquí encontrarás consejos para manejar el
+                        estrés, elegir tu carrera y organizarte con los estudios. ¡Tú eres el protagonista de tu futuro!
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                            <h5 class="font-bold text-slate-900 text-sm"><i class="fas fa-heart text-red-500 mr-2"></i>
+                                Autoestima y Bienestar</h5>
+                            <p class="text-xs text-slate-500 mt-1">Aprende a conocer tus fortalezas emocionales.</p>
+                        </div>
+                        <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                            <h5 class="font-bold text-slate-900 text-sm"><i class="fas fa-star text-amber-500 mr-2"></i>
+                                Orientación Vocacional</h5>
+                            <p class="text-xs text-slate-500 mt-1">Test rápidos y fichas profesionales de carreras.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="currentSection === 'familias'" class="space-y-6">
+                    <p class="text-slate-600">Acompañar el crecimiento de los hijos es una labor maravillosa pero
+                        compleja. Te ofrecemos herramientas para mejorar la comunicación afectiva y el apoyo escolar
+                        desde el hogar.</p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                            <h5 class="font-bold text-slate-900 text-sm"><i
+                                    class="fas fa-comments text-blue-500 mr-2"></i> Comunicación Asertiva</h5>
+                            <p class="text-xs text-slate-500 mt-1">Cómo hablar de temas complejos con tus hijos.</p>
+                        </div>
+                        <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                            <h5 class="font-bold text-slate-900 text-sm"><i
+                                    class="fas fa-shield-alt text-emerald-500 mr-2"></i> Límites con Amor</h5>
+                            <p class="text-xs text-slate-500 mt-1">Estrategias de disciplina positiva en casa.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="currentSection === 'docentes'" class="space-y-6">
+                    <p class="text-slate-600">Reconocemos tu labor diaria en el aula. Aquí tienes recursos didácticos
+                        para la resolución pacífica de conflictos, dinámicas de grupo para la hora de tutoría y guías de
+                        detección temprana.</p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                            <h5 class="font-bold text-slate-900 text-sm"><i
+                                    class="fas fa-hands-helping text-indigo-500 mr-2"></i> Mediación Escolar</h5>
+                            <p class="text-xs text-slate-500 mt-1">Protocolos prácticos de convivencia armónica.</p>
+                        </div>
+                        <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                            <h5 class="font-bold text-slate-900 text-sm"><i
+                                    class="fas fa-brain text-purple-500 mr-2"></i> Alertas Tempranas</h5>
+                            <p class="text-xs text-slate-500 mt-1">Identificación de factores de riesgo psicopedagógico.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACTO -->
+        <section x-show="currentSection === 'contacto'" x-transition.opacity.duration.300ms
+            class="py-16 container mx-auto px-4">
+            <div
+                class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden grid md:grid-cols-5 border border-slate-100">
+                <div
+                    class="md:col-2 bg-gradient-to-br from-blue-900 to-blue-800 text-white p-8 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold">¿Necesitas orientación?</h3>
+                        <p class="text-xs text-blue-200 leading-relaxed">Escríbenos con total confidencialidad. Nuestro
+                            equipo técnico evaluará tu consulta de forma personalizada.</p>
+                    </div>
+                    <div class="space-y-3 pt-6 text-xs text-blue-100">
+                        <p class="flex items-center"><i class="fas fa-envelope mr-3 text-blue-300"></i>
+                            contacto@rdorientado.edu.do</p>
+                        <p class="flex items-center"><i class="fas fa-clock mr-3 text-blue-300"></i> Lun - Vie, 8:00 AM
+                            - 4:00 PM</p>
+                    </div>
+                </div>
+                <!-- Formulario -->
+                <form @submit.prevent="submitForm()" class="md:col-3 p-8 space-y-4">
+                    <h4 class="font-bold text-slate-900 text-lg">Formulario de Enlace</h4>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre Completo</label>
+                            <input type="text" required
+                                class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tú eres...</label>
+                            <select
+                                class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                                <option>Estudiante</option>
+                                <option>Familiar / Tutor</option>
+                                <option>Docente / Directivo</option>
+                                <option>Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Correo Electrónico</label>
+                        <input type="email" required
+                            class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tu Mensaje / Consulta</label>
+                        <textarea rows="4" required
+                            class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors shadow cursor-pointer">
+                        Enviar Consulta Segura
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-sm pt-12 pb-6 border-t border-slate-800">
+        <div class="container mx-auto px-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-3">
+                <span class="text-xl font-bold text-white tracking-tight block">RD<span
+                        class="text-blue-500">ORIENTADO</span></span>
+                <p class="text-xs leading-relaxed text-slate-400">“Orientamos caminos, acompañamos decisiones y
+                    construimos futuros”.</p>
+            </div>
+            <div>
+                <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">Secciones</h5>
+                <ul class="space-y-1.5 text-xs">
+                    <li><button @click="currentSection = 'inicio'"
+                            class="hover:text-white cursor-pointer">Inicio</button></li>
+                    <li><button @click="currentSection = 'sobre-nosotros'" class="hover:text-white cursor-pointer">Sobre
+                            Nosotros</button></li>
+                    <li><button @click="currentSection = 'recursos'"
+                            class="hover:text-white cursor-pointer">Recursoteca</button></li>
+                    <li><button @click="currentSection = 'biblioteca'"
+                            class="hover:text-white cursor-pointer">Biblioteca Digital</button></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">Comunidad</h5>
+                <ul class="space-y-1.5 text-xs">
+                    <li><button @click="currentSection = 'estudiantes'"
+                            class="hover:text-white cursor-pointer">Estudiantes</button></li>
+                    <li><button @click="currentSection = 'familias'"
+                            class="hover:text-white cursor-pointer">Familias</button></li>
+                    <li><button @click="currentSection = 'docentes'"
+                            class="hover:text-white cursor-pointer">Docentes</button></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">Compromiso</h5>
+                <p class="text-xs text-slate-500 leading-relaxed">Portal diseñado bajo estándares de accesibilidad y
+                    usabilidad para toda la comunidad educativa dominicana e hispanohablante.</p>
+            </div>
+        </div>
+        <div
+            class="container mx-auto px-4 border-t border-slate-800 pt-6 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>&copy; 2026 RDORIENTADO. Todos los derechos reservados.</p>
+            <div class="flex space-x-4 text-base">
+                <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-white"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE MODAL DETAILdsd -->
+    <div x-show="modalOpen" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" x-cloak
+        x-transition>
+        <div @click.away="modalOpen = false" class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button @click="modalOpen = false"
+                class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 cursor-pointer"><i
+                    class="fas fa-times text-lg"></i></button>
+            <span class="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded"
+                x-text="modalContent.category"></span>
+            <h3 class="text-xl font-bold text-slate-900 mt-2 mb-3" x-text="modalContent.title"></h3>
+            <p class="text-slate-600 text-sm leading-relaxed mb-6"
+                x-text="modalContent.detailedText || modalContent.description"></p>
+            <div class="flex justify-end">
+                <button @click="modalOpen = false"
+                    class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC SCRIPTS -->
+    <script>
+        function appData() {
+            return {
+                currentSection: 'inicio',
+                mobileMenu: false,
+                searchQuery: '',
+                selectedCategory: 'todos',
+                modalOpen: false,
+                modalContent: {},
+
+                navItems: [
+                    { id: 'inicio', name: 'Inicio' },
+                    { id: 'sobre-nosotros', name: 'Sobre RDORIENTADO' },
+                    { id: 'recursos', name: 'Recursos' },
+                    { id: 'biblioteca', name: 'Biblioteca' },
+                    { id: 'multimedia', name: 'Multimedia' },
+                    { id: 'blog', name: 'Blog' },
+                    { id: 'estudiantes', name: 'Estudiantes' },
+                    { id: 'familias', name: 'Familias' },
+                    { id: 'docentes', name: 'Docentes' },
+                    { id: 'contacto', name: 'Contacto' }
+                ],
+
+                categories: [
+                    'Bienestar Emocional', 'Orientación Académica', 'Orientación Vocacional',
+                    'Convivencia Escolar', 'Familia y Escuela', 'Hábitos de Estudio',
+                    'Proyecto de Vida', 'Desarrollo Personal'
+                ],
+
+                recursosData: [
+                    { id: 1, category: 'Bienestar Emocional', title: 'Gestión de Emociones en el Aula', description: 'Fichas con dinámicas rápidas para que los docentes ayuden a regular estados de frustración en los alumnos.', detailedText: 'Este recurso incluye 5 dinámicas prácticas de respiración y enfoque aplicables a los primeros 5 minutos de clase, diseñadas para mejorar los niveles de concentración y reducir el estrés colectivo.' },
+                    { id: 2, category: 'Orientación Vocacional', title: 'Mapa Mental de Carreras Técnicas', description: 'Infografía interactiva sobre las profesiones tecnológicas con mayor demanda laboral en la actualidad.', detailedText: 'Una completa radiografía de carreras como Desarrollo de Software, Ciberseguridad y Analítica de Datos. Incluye perfiles de habilidades requeridos para cada una.' },
+                    { id: 3, category: 'Hábitos de Estudio', title: 'Técnica Pomodoro Aplicada', description: 'Guía paso a paso para organizar jornadas de estudio eficientes evitando la fatiga mental y la procrastinación.', detailedText: 'Aprende a estructurar bloques de 25 minutos de enfoque total con descansos de 5 minutos, adaptando este famoso método a las asignaturas de secundaria.' },
+                    { id: 4, category: 'Convivencia Escolar', title: 'Acuerdos de Paz en mi Aula', description: 'Plantilla descargable y dinámica grupal para estructurar el reglamento del salón de forma democrática.', detailedText: 'Fomenta la autorregulación y la responsabilidad compartida mediante dinámicas donde los propios alumnos proponen y firman sus normas de convivencia.' }
+                ],
+
+                bibliotecaDocs: [
+                    { id: 101, category: 'Proyecto de Vida', type: 'PDF', title: 'Cuaderno de Ruta: Construyendo Mi Futuro', description: 'Documento completo con test de intereses, prioridades y metas a mediano plazo para rellenar.' },
+                    { id: 102, category: 'Familia y Escuela', type: 'Guía', title: 'Manual de Crianza Positiva en la Era Digital', description: 'Orientaciones específicas para padres sobre cómo establecer límites saludables de pantallas en el hogar.' },
+                    { id: 103, category: 'Orientación Académica', type: 'Fichas', title: 'Planificador Semanal de Asignaturas', description: 'Plantilla editable en formato Word para organizar tareas, exámenes y proyectos con criterios de prioridad.' }
+                ],
+
+                filteredRecursos() {
+                    return this.recursosData.filter(item => {
+                        const matchesCategory = this.selectedCategory === 'todos' || item.category === this.selectedCategory;
+                        const matchesSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+                        return matchesCategory && matchesSearch;
+                    });
+                },
+
+                openModal(item) {
+                    this.modalContent = item;
+                    this.modalOpen = true;
+                },
+
+                submitForm() {
+                    alert('¡Muchas gracias por contactar con RDORIENTADO! Tu consulta ha sido enviada con éxito. Un orientador te responderá al correo provisto de forma confidencial.');
+                    this.currentSection = 'inicio';
+                },
+
+                toggleAccesibilidad() {
+                    document.body.classList.toggle('contrast-125');
+                    alert('Modo de visualización adaptado para accesibilidad visual.');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
