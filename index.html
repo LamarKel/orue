@@ -7,6 +7,10 @@
     <title>RDORIENTADO - Orientación Escolar Integral</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Marked (render Markdown del blog) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- Alpine.js para interactividad reactiva ligera -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- FontAwesome para Iconos -->
@@ -23,14 +27,67 @@
         [x-cloak] {
             display: none !important;
         }
+
+        .prosa-blog h1,
+        .prosa-blog h2,
+        .prosa-blog h3 {
+            font-weight: 700;
+            color: #0f172a;
+            margin: 1.25rem 0 .5rem;
+        }
+
+        .prosa-blog h1 {
+            font-size: 1.5rem;
+        }
+
+        .prosa-blog h2 {
+            font-size: 1.25rem;
+        }
+
+        .prosa-blog h3 {
+            font-size: 1.1rem;
+        }
+
+        .prosa-blog p {
+            margin: .75rem 0;
+            line-height: 1.75;
+            color: #334155;
+        }
+
+        .prosa-blog ul,
+        .prosa-blog ol {
+            margin: .75rem 0 .75rem 1.5rem;
+            color: #334155;
+        }
+
+        .prosa-blog ul {
+            list-style: disc;
+        }
+
+        .prosa-blog ol {
+            list-style: decimal;
+        }
+
+        .prosa-blog a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .prosa-blog blockquote {
+            border-left: 4px solid #2563eb;
+            padding-left: 1rem;
+            font-style: italic;
+            color: #475569;
+            margin: 1rem 0;
+        }
     </style>
 </head>
 
 <body class="bg-slate-50 text-slate-800 antialiased" x-data="appData()">
 
     <!-- TOP BAR & ACCESIBILIDAD -->
-    <div class="bg-blue-900 text-white text-xs py-2 px-4 flex justify-between items-center class= hidden md:flex">
-        <div><i class="fas fa-graduation-cap class= mr-2"></i> Un espacio digital para el desarrollo integral educativo
+    <div class="bg-blue-900 text-white text-xs py-2 px-4 justify-between items-center hidden md:flex">
+        <div><i class="fas fa-graduation-cap mr-2"></i> Un espacio digital para el desarrollo integral educativo
         </div>
         <div class="flex gap-4">
             <button @click="toggleAccesibilidad()" class="hover:underline cursor-pointer"><i
@@ -42,11 +99,10 @@
     <!-- HEADER & NAVEGACIÓN -->
     <header class="bg-white/95 backdrop-blur shadow-md sticky top-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <!-- Logo -->
-            <a href="#" @click.prevent="currentSection = 'inicio'" class="flex items-center space-x-2 group">
+            <a href="#" @click.prevent="irA('inicio')" class="flex items-center space-x-2 group">
                 <div
                     class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md group-hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-compass text-xl animate-spin-slow"></i>
+                    <i class="fas fa-compass text-xl"></i>
                 </div>
                 <div>
                     <span class="text-2xl font-bold text-blue-900 tracking-tight block">RD<span
@@ -56,10 +112,9 @@
                 </div>
             </a>
 
-            <!-- Nav Desktop -->
             <nav class="hidden lg:flex items-center space-x-1">
                 <template x-for="item in navItems">
-                    <button @click="currentSection = item.id"
+                    <button @click="irA(item.id)"
                         :class="currentSection === item.id ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'"
                         class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer"
                         x-text="item.name">
@@ -67,18 +122,16 @@
                 </template>
             </nav>
 
-            <!-- Mobile Menu Button -->
             <button @click="mobileMenu = !mobileMenu"
                 class="lg:hidden text-slate-600 hover:text-blue-600 focus:outline-none p-2">
                 <i class="fas" :class="mobileMenu ? 'fa-times text-xl' : 'fa-bars text-xl'"></i>
             </button>
         </div>
 
-        <!-- Mobile Nav Menu -->
         <div x-show="mobileMenu" x-transition
             class="lg:hidden bg-white border-t border-slate-100 px-4 py-3 space-y-1 shadow-inner">
             <template x-for="item in navItems">
-                <button @click="currentSection = item.id; mobileMenu = false"
+                <button @click="irA(item.id); mobileMenu = false"
                     :class="currentSection === item.id ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-600'"
                     class="block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium transition-colors"
                     x-text="item.name">
@@ -92,7 +145,6 @@
 
         <!-- INICIO -->
         <section x-show="currentSection === 'inicio'" x-transition.opacity.duration.300ms>
-            <!-- Hero -->
             <div
                 class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-950 text-white py-20 lg:py-32 overflow-hidden">
                 <div
@@ -112,11 +164,11 @@
                             el trayecto hacia el desarrollo integral.
                         </p>
                         <div class="flex flex-wrap gap-4 pt-2">
-                            <button @click="currentSection = 'recursos'"
+                            <button @click="irA('recursos')"
                                 class="bg-white text-blue-900 hover:bg-blue-50 font-semibold px-6 py-3 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer">
                                 Explorar Recursos <i class="fas fa-arrow-right ml-2"></i>
                             </button>
-                            <button @click="currentSection = 'contacto'"
+                            <button @click="irA('contacto')"
                                 class="border-2 border-white/30 hover:border-white text-white font-semibold px-6 py-3 rounded-xl transition-all cursor-pointer">
                                 Solicitar Orientación
                             </button>
@@ -131,10 +183,9 @@
                 </div>
             </div>
 
-            <!-- Accesos Directos por Roles -->
             <div class="container mx-auto px-4 -mt-12 relative z-20">
                 <div class="grid md:grid-cols-3 gap-6">
-                    <div @click="currentSection = 'estudiantes'"
+                    <div @click="irA('estudiantes')"
                         class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all group cursor-pointer">
                         <div
                             class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -148,7 +199,7 @@
                             al espacio <i class="fas fa-chevron-right ml-1 text-xs"></i></span>
                     </div>
 
-                    <div @click="currentSection = 'familias'"
+                    <div @click="irA('familias')"
                         class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all group cursor-pointer">
                         <div
                             class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-5 group-hover:bg-amber-600 group-hover:text-white transition-colors">
@@ -162,7 +213,7 @@
                             al espacio <i class="fas fa-chevron-right ml-1 text-xs"></i></span>
                     </div>
 
-                    <div @click="currentSection = 'docentes'"
+                    <div @click="irA('docentes')"
                         class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all group cursor-pointer">
                         <div
                             class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -178,7 +229,6 @@
                 </div>
             </div>
 
-            <!-- Destacado del Mes -->
             <div class="container mx-auto px-4 py-20">
                 <div
                     class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 md:p-12 border border-blue-100/50 flex flex-col lg:flex-row items-center gap-8">
@@ -191,9 +241,9 @@
                         <p class="text-slate-600 leading-relaxed">¿Aún no decides qué carrera universitaria o técnica
                             elegir? Hemos diseñado este cuaderno interactivo para ayudarte a descubrir tus habilidades,
                             pasiones y planificar tu proyecto de vida de forma inteligente.</p>
-                        <button @click="currentSection = 'biblioteca'"
+                        <button @click="irA('biblioteca')"
                             class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm shadow-md transition-colors cursor-pointer">
-                            <i class="fas fa-download mr-2"></i> Descargar Guía Gratis (PDF)
+                            <i class="fas fa-download mr-2"></i> Ir a la Biblioteca Digital
                         </button>
                     </div>
                     <div class="w-full lg:w-1/3 flex justify-center">
@@ -257,7 +307,7 @@
             </div>
         </section>
 
-        <!-- RECURSOS EDUCATIVOS (DINÁMICO CON FILTROS Y BUSCADOR) -->
+        <!-- RECURSOS EDUCATIVOS (DINÁMICO DESDE SUPABASE) -->
         <section x-show="currentSection === 'recursos'" x-transition.opacity.duration.300ms
             class="py-16 container mx-auto px-4">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
@@ -266,7 +316,6 @@
                     <p class="text-slate-600 text-sm mt-1">Explora actividades, dinámicas e infografías diseñadas por
                         profesionales.</p>
                 </div>
-                <!-- Buscador -->
                 <div class="relative w-full md:w-72">
                     <i class="fas fa-search absolute left-3 top-3.5 text-slate-400 text-sm"></i>
                     <input type="text" x-model="searchQuery" placeholder="Buscar material..."
@@ -274,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- Categorías (Filtros Horizontales) -->
             <div class="flex flex-wrap gap-2 mb-8 overflow-x-auto pb-2">
                 <button @click="selectedCategory = 'todos'"
                     :class="selectedCategory === 'todos' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
@@ -287,7 +335,6 @@
                 </template>
             </div>
 
-            <!-- Grid de Tarjetas de Recursos -->
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <template x-for="item in filteredRecursos()" :key="item.id">
                     <div
@@ -295,9 +342,9 @@
                         <div class="p-5 flex-1">
                             <span
                                 class="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-md block w-max mb-3"
-                                x-text="item.category"></span>
-                            <h4 class="font-bold text-slate-900 text-lg mb-2" x-text="item.title"></h4>
-                            <p class="text-slate-600 text-xs leading-relaxed" x-text="item.description"></p>
+                                x-text="item.categoria"></span>
+                            <h4 class="font-bold text-slate-900 text-lg mb-2" x-text="item.titulo"></h4>
+                            <p class="text-slate-600 text-xs leading-relaxed" x-text="item.descripcion"></p>
                         </div>
                         <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
                             <span class="text-xs text-slate-500 font-medium"><i class="fas fa-eye mr-1"></i> Contenido
@@ -309,51 +356,71 @@
                     </div>
                 </template>
             </div>
-            <!-- Empty State -->
-            <div x-show="filteredRecursos().length === 0"
+            <div x-show="!cargandoPublico && filteredRecursos().length === 0"
                 class="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
                 <i class="fas fa-folder-open text-slate-300 text-4xl mb-3"></i>
                 <p class="text-slate-500 text-sm">No encontramos recursos que coincidan con tu búsqueda.</p>
             </div>
         </section>
 
-        <!-- BIBLIOTECA DIGITAL -->
+        <!-- BIBLIOTECA DIGITAL (DINÁMICA DESDE SUPABASE) -->
         <section x-show="currentSection === 'biblioteca'" x-transition.opacity.duration.300ms
             class="py-16 bg-slate-100/60 shadow-inner">
             <div class="container mx-auto px-4">
-                <div class="mb-10">
-                    <h2 class="text-3xl font-bold text-blue-900">Biblioteca Digital</h2>
-                    <p class="text-slate-600 text-sm">Documentos oficiales, guías imprimibles y herramientas de trabajo
-                        descargables.</p>
+                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-blue-900">Biblioteca Digital</h2>
+                        <p class="text-slate-600 text-sm">Documentos oficiales, guías imprimibles y herramientas de
+                            trabajo descargables.</p>
+                    </div>
+                    <select x-model="bibliotecaCategoria"
+                        class="w-full md:w-64 text-sm border border-slate-200 px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                        <option value="todos">Todas las categorías</option>
+                        <template x-for="cat in categories">
+                            <option :value="cat" x-text="cat"></option>
+                        </template>
+                    </select>
                 </div>
 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="doc in bibliotecaDocs">
+                <div x-show="cargandoPublico" class="text-center py-16">
+                    <i class="fas fa-circle-notch fa-spin text-blue-500 text-3xl mb-3"></i>
+                    <p class="text-slate-500 text-sm">Cargando documentos...</p>
+                </div>
+
+                <div x-show="!cargandoPublico" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="doc in filteredBiblioteca()" :key="doc.id">
                         <div
                             class="bg-white p-6 rounded-2xl shadow border border-slate-100 flex flex-col justify-between hover:border-blue-200 transition-colors">
                             <div>
                                 <div class="flex justify-between items-start mb-4">
                                     <span
                                         class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded"
-                                        x-text="doc.category"></span>
+                                        x-text="doc.categoria"></span>
                                     <span
                                         class="text-xs text-slate-400 font-bold uppercase border border-slate-200 px-1.5 py-0.5 rounded"
-                                        x-text="doc.type"></span>
+                                        x-text="doc.tipo"></span>
                                 </div>
-                                <h4 class="font-bold text-slate-900 text-base mb-1" x-text="doc.title"></h4>
-                                <p class="text-slate-500 text-xs leading-relaxed mb-4" x-text="doc.description"></p>
+                                <h4 class="font-bold text-slate-900 text-base mb-1" x-text="doc.titulo"></h4>
+                                <p class="text-slate-500 text-xs leading-relaxed mb-4" x-text="doc.descripcion"></p>
                             </div>
-                            <a :href="doc.link"
+                            <a :href="doc.enlace" target="_blank" rel="noopener noreferrer"
                                 class="w-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors text-center text-xs font-bold py-2.5 rounded-xl inline-flex items-center justify-center gap-2">
-                                <i class="fas fa-download"></i> Descargar Documento
+                                <i class="fas" :class="hostIcon(doc.enlace)"></i>
+                                <span x-text="'Descargar desde ' + hostName(doc.enlace)"></span>
                             </a>
                         </div>
                     </template>
                 </div>
+
+                <div x-show="!cargandoPublico && filteredBiblioteca().length === 0"
+                    class="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
+                    <i class="fas fa-book-open text-slate-300 text-4xl mb-3"></i>
+                    <p class="text-slate-500 text-sm">Aún no hay documentos publicados en esta categoría.</p>
+                </div>
             </div>
         </section>
 
-        <!-- MULTIMEDIA -->
+        <!-- MULTIMEDIA (DINÁMICA DESDE SUPABASE) -->
         <section x-show="currentSection === 'multimedia'" x-transition.opacity.duration.300ms
             class="py-16 container mx-auto px-4">
             <div class="mb-10">
@@ -363,101 +430,108 @@
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Video Item Simulation -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow group">
-                    <div class="relative bg-slate-900 aspect-video flex items-center justify-center">
-                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
-                            class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-300"
-                            alt="Video">
-                        <button
-                            class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-blue-700 transition-colors z-10 cursor-pointer">
-                            <i class="fas fa-play ml-1"></i>
-                        </button>
+                <template x-for="item in multimedia" :key="item.id">
+                    <div class="bg-white rounded-2xl overflow-hidden shadow group">
+                        <div class="relative bg-slate-900 aspect-video">
+                            <template x-if="item.tipo === 'video' && youtubeId(item.url)">
+                                <iframe class="w-full h-full"
+                                    :src="'https://www.youtube.com/embed/' + youtubeId(item.url)" :title="item.titulo"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen></iframe>
+                            </template>
+                            <template x-if="item.tipo === 'foto'">
+                                <img :src="item.url" :alt="item.titulo"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            </template>
+                            <template x-if="item.tipo === 'video' && !youtubeId(item.url)">
+                                <a :href="item.url" target="_blank" rel="noopener noreferrer"
+                                    class="absolute inset-0 flex items-center justify-center">
+                                    <span
+                                        class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-play ml-1"></i>
+                                    </span>
+                                </a>
+                            </template>
+                        </div>
+                        <div class="p-4">
+                            <span class="text-[10px] uppercase font-bold"
+                                :class="item.tipo === 'video' ? 'text-red-500' : 'text-blue-600'">
+                                <i class="fas mr-1" :class="item.tipo === 'video' ? 'fa-video' : 'fa-camera'"></i>
+                                <span x-text="item.tipo === 'video' ? 'Cápsula Educativa' : 'Fotografía'"></span>
+                            </span>
+                            <h4 class="font-bold text-sm text-slate-900 mt-1" x-text="item.titulo"></h4>
+                        </div>
                     </div>
-                    <div class="p-4">
-                        <span class="text-[10px] uppercase font-bold text-red-500"><i class="fas fa-video mr-1"></i>
-                            Cápsula Educativa</span>
-                        <h4 class="font-bold text-sm text-slate-900 mt-1">Manejo de la Ansiedad ante los Exámenes</h4>
-                    </div>
-                </div>
+                </template>
+            </div>
 
-                <!-- Gallery Item 1 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow group">
-                    <div class="relative aspect-video">
-                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80"
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            alt="Taller">
-                    </div>
-                    <div class="p-4">
-                        <span class="text-[10px] uppercase font-bold text-blue-600"><i class="fas fa-camera mr-1"></i>
-                            Fotografía</span>
-                        <h4 class="font-bold text-sm text-slate-900 mt-1">Taller de Proyecto de Vida con Estudiantes de
-                            Secundaria</h4>
-                    </div>
-                </div>
-
-                <!-- Gallery Item 2 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow group">
-                    <div class="relative aspect-video">
-                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80"
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            alt="Convivencia">
-                    </div>
-                    <div class="p-4">
-                        <span class="text-[10px] uppercase font-bold text-emerald-600"><i
-                                class="fas fa-images mr-1"></i> Álbum</span>
-                        <h4 class="font-bold text-sm text-slate-900 mt-1">Jornada de Convivencia Escolar y Cultura de
-                            Paz</h4>
-                    </div>
-                </div>
+            <div x-show="!cargandoPublico && multimedia.length === 0"
+                class="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
+                <i class="fas fa-photo-film text-slate-300 text-4xl mb-3"></i>
+                <p class="text-slate-500 text-sm">Aún no hay contenido multimedia publicado.</p>
             </div>
         </section>
 
-        <!-- BLOG -->
+        <!-- BLOG (DINÁMICO DESDE SUPABASE) -->
         <section x-show="currentSection === 'blog'" x-transition.opacity.duration.300ms
             class="py-16 container mx-auto px-4">
-            <div class="mb-10 text-center">
-                <h2 class="text-3xl font-bold text-blue-900">Blog de Orientación & Bienestar</h2>
-                <p class="text-slate-600 text-sm mt-1">Artículos de opinión, consejos técnicos y lecturas de interés
-                    general.</p>
+
+            <!-- Lista de artículos -->
+            <div x-show="!postActivo">
+                <div class="mb-10 text-center">
+                    <h2 class="text-3xl font-bold text-blue-900">Blog de Orientación & Bienestar</h2>
+                    <p class="text-slate-600 text-sm mt-1">Artículos de opinión, consejos técnicos y lecturas de interés
+                        general.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <template x-for="post in posts" :key="post.id">
+                        <article
+                            class="bg-white rounded-2xl shadow overflow-hidden border border-slate-100 flex flex-col justify-between">
+                            <div>
+                                <img :src="post.imagen_url || 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&q=80'"
+                                    class="h-48 w-full object-cover" :alt="post.titulo">
+                                <div class="p-5">
+                                    <span class="text-xs text-slate-400 font-medium"
+                                        x-text="formatFecha(post.fecha)"></span>
+                                    <h3
+                                        class="font-bold text-slate-900 text-lg mt-1 mb-2 hover:text-blue-600 transition-colors">
+                                        <span x-text="post.titulo"></span>
+                                    </h3>
+                                    <p class="text-slate-600 text-xs leading-relaxed" x-text="post.resumen"></p>
+                                </div>
+                            </div>
+                            <div class="p-5 border-t border-slate-50">
+                                <button @click="abrirPost(post)"
+                                    class="text-blue-600 font-bold text-xs hover:underline cursor-pointer">Leer artículo
+                                    completo</button>
+                            </div>
+                        </article>
+                    </template>
+                </div>
+
+                <div x-show="!cargandoPublico && posts.length === 0"
+                    class="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
+                    <i class="fas fa-newspaper text-slate-300 text-4xl mb-3"></i>
+                    <p class="text-slate-500 text-sm">Aún no hay artículos publicados.</p>
+                </div>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <article
-                    class="bg-white rounded-2xl shadow overflow-hidden border border-slate-100 flex flex-col justify-between">
-                    <div>
-                        <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&q=80"
-                            class="h-48 w-full object-cover" alt="Blog post">
-                        <div class="p-5">
-                            <span class="text-xs text-slate-400 font-medium">25 Junio, 2026</span>
-                            <h3
-                                class="font-bold text-slate-900 text-lg mt-1 mb-2 hover:text-blue-600 transition-colors">
-                                Uso Inteligente de las Redes Sociales en la Adolescencia</h3>
-                            <p class="text-slate-600 text-xs leading-relaxed">Pautas preventivas para guiar a los
-                                jóvenes hacia una ciudadanía digital responsable, minimizando riesgos de ciberacoso.</p>
-                        </div>
-                    </div>
-                    <div class="p-5 border-t border-slate-50">
-                        <a href="#" class="text-blue-600 font-bold text-xs hover:underline">Leer artículo completo</a>
-                    </div>
-                </article>
-
-                <article
-                    class="bg-white rounded-2xl shadow overflow-hidden border border-slate-100 flex flex-col justify-between">
-                    <div>
-                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80"
-                            class="h-48 w-full object-cover" alt="Blog post">
-                        <div class="p-5">
-                            <span class="text-xs text-slate-400 font-medium">18 Junio, 2026</span>
-                            <h3
-                                class="font-bold text-slate-900 text-lg mt-1 mb-2 hover:text-blue-600 transition-colors">
-                                Cómo Crear un Espacio de Estudio Óptimo en el Hogar</h3>
-                            <p class="text-slate-600 text-xs leading-relaxed">El entorno físico afecta directamente el
-                                rendimiento académico. Te mostramos cómo adecuar un rincón sin grandes inversiones.</p>
-                        </div>
-                    </div>
-                    <div class="p-5 border-t border-slate-50">
-                        <a href="#" class="text-blue-600 font-bold text-xs hover:underline">Leer artículo completo</a>
+            <!-- Detalle del artículo -->
+            <div x-show="postActivo" x-cloak class="max-w-3xl mx-auto">
+                <button @click="postActivo = null"
+                    class="text-blue-600 text-sm font-semibold mb-6 hover:underline cursor-pointer">
+                    <i class="fas fa-arrow-left mr-1"></i> Volver al blog
+                </button>
+                <article class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                    <img x-show="postActivo?.imagen_url" :src="postActivo?.imagen_url" :alt="postActivo?.titulo"
+                        class="w-full h-64 object-cover">
+                    <div class="p-8 md:p-10">
+                        <span class="text-xs text-slate-400 font-medium" x-text="formatFecha(postActivo?.fecha)"></span>
+                        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 mt-2 mb-6" x-text="postActivo?.titulo">
+                        </h1>
+                        <div class="prosa-blog text-sm" x-html="renderMarkdown(postActivo?.contenido)"></div>
                     </div>
                 </article>
             </div>
@@ -466,7 +540,6 @@
         <!-- ROLES SPECIFIC SPACES (ESTUDIANTES, FAMILIAS, DOCENTES) -->
         <section x-show="['estudiantes', 'familias', 'docentes'].includes(currentSection)"
             x-transition.opacity.duration.300ms class="py-16 container mx-auto px-4">
-            <!-- Dinámico según el rol seleccionado -->
             <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-slate-100">
                 <div class="flex items-center space-x-4 mb-6">
                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
@@ -483,7 +556,6 @@
                 </div>
                 <hr class="border-slate-100 my-6">
 
-                <!-- Contenido Variable según Rol -->
                 <div x-show="currentSection === 'estudiantes'" class="space-y-6">
                     <p class="text-slate-600">Este es tu rincón seguro. Aquí encontrarás consejos para manejar el
                         estrés, elegir tu carrera y organizarte con los estudios. ¡Tú eres el protagonista de tu futuro!
@@ -541,13 +613,13 @@
             </div>
         </section>
 
-        <!-- CONTACTO -->
+        <!-- CONTACTO (GUARDA EN SUPABASE) -->
         <section x-show="currentSection === 'contacto'" x-transition.opacity.duration.300ms
             class="py-16 container mx-auto px-4">
             <div
                 class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden grid md:grid-cols-5 border border-slate-100">
                 <div
-                    class="md:col-2 bg-gradient-to-br from-blue-900 to-blue-800 text-white p-8 flex flex-col justify-between">
+                    class="md:col-span-2 bg-gradient-to-br from-blue-900 to-blue-800 text-white p-8 flex flex-col justify-between">
                     <div class="space-y-4">
                         <h3 class="text-xl font-bold">¿Necesitas orientación?</h3>
                         <p class="text-xs text-blue-200 leading-relaxed">Escríbenos con total confidencialidad. Nuestro
@@ -560,18 +632,17 @@
                             - 4:00 PM</p>
                     </div>
                 </div>
-                <!-- Formulario -->
-                <form @submit.prevent="submitForm()" class="md:col-3 p-8 space-y-4">
+                <form @submit.prevent="enviarConsulta()" class="md:col-span-3 p-8 space-y-4">
                     <h4 class="font-bold text-slate-900 text-lg">Formulario de Enlace</h4>
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre Completo</label>
-                            <input type="text" required
+                            <input type="text" x-model="contactForm.nombre" required
                                 class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Tú eres...</label>
-                            <select
+                            <select x-model="contactForm.perfil"
                                 class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
                                 <option>Estudiante</option>
                                 <option>Familiar / Tutor</option>
@@ -582,19 +653,287 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Correo Electrónico</label>
-                        <input type="email" required
+                        <input type="email" x-model="contactForm.correo" required
                             class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Tu Mensaje / Consulta</label>
-                        <textarea rows="4" required
+                        <textarea rows="4" x-model="contactForm.mensaje" required
                             class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                     </div>
-                    <button type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors shadow cursor-pointer">
-                        Enviar Consulta Segura
+                    <p x-show="contactoMsg" x-text="contactoMsg" class="text-emerald-600 text-xs font-semibold"></p>
+                    <button type="submit" :disabled="enviandoConsulta"
+                        class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors shadow cursor-pointer">
+                        <span x-text="enviandoConsulta ? 'Enviando...' : 'Enviar Consulta Segura'"></span>
                     </button>
                 </form>
+            </div>
+        </section>
+
+        <!-- ================================================== -->
+        <!-- PANEL DE ADMINISTRACIÓN (ACCESO POR FOOTER)         -->
+        <!-- ================================================== -->
+        <section x-show="currentSection === 'admin'" x-transition.opacity.duration.300ms
+            class="py-16 container mx-auto px-4">
+
+            <div x-show="!supabaseListo"
+                class="max-w-2xl mx-auto bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-6 text-sm">
+                <p class="font-bold mb-1"><i class="fas fa-triangle-exclamation mr-2"></i>Supabase no está configurado
+                </p>
+                <p>Edita las constantes <code class="bg-amber-100 px-1 rounded">SUPABASE_URL</code> y <code
+                        class="bg-amber-100 px-1 rounded">SUPABASE_ANON_KEY</code> al inicio del bloque de scripts.
+                    Mientras tanto la web muestra datos de demostración.</p>
+            </div>
+
+            <!-- LOGIN -->
+            <div x-show="supabaseListo && !session"
+                class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lock text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">Acceso Administrativo</h2>
+                    <p class="text-slate-500 text-xs mt-1">Área restringida para la gestión de contenidos.</p>
+                </div>
+                <form @submit.prevent="login()" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Correo Electrónico</label>
+                        <input type="email" x-model="loginForm.email" required
+                            class="w-full text-sm border border-slate-200 px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Contraseña</label>
+                        <input type="password" x-model="loginForm.password" required
+                            class="w-full text-sm border border-slate-200 px-3 py-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <p x-show="loginError" x-text="loginError" class="text-red-600 text-xs font-medium"></p>
+                    <button type="submit" :disabled="loginLoading"
+                        class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors shadow cursor-pointer">
+                        <i class="fas" :class="loginLoading ? 'fa-circle-notch fa-spin' : 'fa-right-to-bracket'"></i>
+                        <span x-text="loginLoading ? ' Verificando...' : ' Iniciar Sesión'"></span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- PANEL -->
+            <div x-show="supabaseListo && session" class="space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-blue-900">Panel de Administración</h2>
+                        <p class="text-slate-500 text-sm mt-1">
+                            Sesión: <span class="font-semibold text-slate-700" x-text="session?.user?.email"></span>
+                        </p>
+                    </div>
+                    <button @click="logout()"
+                        class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-xl text-xs transition-colors cursor-pointer w-max">
+                        <i class="fas fa-right-from-bracket mr-1"></i> Cerrar Sesión
+                    </button>
+                </div>
+
+                <!-- Pestañas -->
+                <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+                    <template x-for="(cfg, tab) in adminConfig" :key="tab">
+                        <button @click="seleccionarTab(tab)"
+                            :class="adminTab === tab ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+                            class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer">
+                            <i class="fas mr-1" :class="cfg.icono"></i> <span x-text="cfg.label"></span>
+                        </button>
+                    </template>
+                    <button @click="seleccionarTab('consultas')"
+                        :class="adminTab === 'consultas' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+                        class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer">
+                        <i class="fas fa-inbox mr-1"></i> Consultas
+                        <span x-show="consultasPendientes() > 0"
+                            class="ml-1 bg-red-500 text-white px-1.5 py-0.5 rounded-full text-[10px]"
+                            x-text="consultasPendientes()"></span>
+                    </button>
+                </div>
+
+                <!-- BANDEJA DE CONSULTAS -->
+                <div x-show="adminTab === 'consultas'" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 text-lg">Bandeja de Consultas
+                            <span class="ml-2 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold"
+                                x-text="consultas.length"></span>
+                        </h3>
+                        <button @click="cargarConsultas()"
+                            class="text-slate-400 hover:text-blue-600 text-sm cursor-pointer" title="Actualizar">
+                            <i class="fas fa-rotate"></i>
+                        </button>
+                    </div>
+                    <template x-for="c in consultas" :key="c.id">
+                        <div class="bg-white p-5 rounded-2xl shadow border transition-colors"
+                            :class="c.atendida ? 'border-slate-100 opacity-70' : 'border-blue-200'">
+                            <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
+                                <div>
+                                    <p class="font-bold text-slate-900 text-sm">
+                                        <span x-text="c.nombre"></span>
+                                        <span
+                                            class="ml-2 text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded"
+                                            x-text="c.perfil"></span>
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        <i class="fas fa-envelope mr-1"></i><span x-text="c.correo"></span>
+                                        <span class="mx-2">·</span><span x-text="formatFecha(c.creado_en)"></span>
+                                    </p>
+                                </div>
+                                <div class="flex gap-1 shrink-0">
+                                    <button @click="toggleAtendida(c)"
+                                        class="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                                        :class="c.atendida ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600'">
+                                        <i class="fas fa-check mr-1"></i>
+                                        <span x-text="c.atendida ? 'Atendida' : 'Marcar atendida'"></span>
+                                    </button>
+                                    <button @click="eliminarConsulta(c)"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                        title="Eliminar"><i class="fas fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-relaxed" x-text="c.mensaje"></p>
+                        </div>
+                    </template>
+                    <div x-show="consultas.length === 0"
+                        class="text-center py-10 bg-white rounded-2xl border border-dashed border-slate-200">
+                        <i class="fas fa-inbox text-slate-300 text-3xl mb-2"></i>
+                        <p class="text-slate-500 text-sm">No hay consultas recibidas.</p>
+                    </div>
+                </div>
+
+                <!-- CRUD GENÉRICO (DOCUMENTOS / RECURSOS / MULTIMEDIA / BLOG) -->
+                <div x-show="adminTab !== 'consultas'" class="grid lg:grid-cols-5 gap-8">
+                    <!-- Formulario -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 lg:sticky lg:top-24">
+                            <h3 class="font-bold text-slate-900 text-lg mb-4">
+                                <i class="fas mr-2 text-blue-600"
+                                    :class="editingId ? 'fa-pen-to-square' : 'fa-plus-circle'"></i>
+                                <span
+                                    x-text="(editingId ? 'Editar ' : 'Agregar ') + adminConfig[adminTab].singular"></span>
+                            </h3>
+                            <form @submit.prevent="guardar()" class="space-y-3">
+                                <template x-for="campo in adminConfig[adminTab].campos" :key="adminTab + '-' + campo.k">
+                                    <div>
+                                        <template x-if="campo.tipo !== 'checkbox'">
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1"
+                                                x-text="campo.label + (campo.req ? ' *' : '')"></label>
+                                        </template>
+                                        <template x-if="campo.tipo === 'text'">
+                                            <input type="text" x-model="formData[campo.k]" :required="campo.req"
+                                                :placeholder="campo.ph || ''"
+                                                class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        </template>
+                                        <template x-if="campo.tipo === 'url'">
+                                            <input type="url" x-model="formData[campo.k]" :required="campo.req"
+                                                :placeholder="campo.ph || 'https://...'"
+                                                class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        </template>
+                                        <template x-if="campo.tipo === 'textarea'">
+                                            <textarea x-model="formData[campo.k]" :rows="campo.rows || 3"
+                                                :required="campo.req" :placeholder="campo.ph || ''"
+                                                class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                                        </template>
+                                        <template x-if="campo.tipo === 'select'">
+                                            <select x-model="formData[campo.k]" :required="campo.req"
+                                                class="w-full text-sm border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                                                <option value="">Seleccionar...</option>
+                                                <template x-for="o in campo.opciones" :key="o">
+                                                    <option :value="o" x-text="o"></option>
+                                                </template>
+                                            </select>
+                                        </template>
+                                        <template x-if="campo.tipo === 'checkbox'">
+                                            <label
+                                                class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
+                                                <input type="checkbox" x-model="formData[campo.k]"
+                                                    class="w-4 h-4 accent-blue-600">
+                                                <span x-text="campo.label"></span>
+                                            </label>
+                                        </template>
+                                        <p class="text-[10px] text-slate-400 mt-1"
+                                            x-show="campo.k === 'enlace' && formData.enlace">
+                                            <i class="fas fa-circle-info mr-1"></i>Detectado: <span class="font-bold"
+                                                x-text="hostName(formData.enlace)"></span>
+                                        </p>
+                                    </div>
+                                </template>
+                                <p x-show="adminMsg" x-text="adminMsg"
+                                    :class="adminMsgError ? 'text-red-600' : 'text-emerald-600'"
+                                    class="text-xs font-medium"></p>
+                                <div class="flex gap-2 pt-1">
+                                    <button type="submit" :disabled="guardando"
+                                        class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors shadow cursor-pointer">
+                                        <i class="fas"
+                                            :class="guardando ? 'fa-circle-notch fa-spin' : (editingId ? 'fa-floppy-disk' : 'fa-plus')"></i>
+                                        <span
+                                            x-text="guardando ? ' Guardando...' : (editingId ? ' Guardar Cambios' : ' Publicar')"></span>
+                                    </button>
+                                    <button type="button" x-show="editingId" @click="resetForm()"
+                                        class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-4 rounded-xl text-sm transition-colors cursor-pointer">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Lista -->
+                    <div class="lg:col-span-3 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900 text-lg">
+                                <span x-text="adminConfig[adminTab].label + ' publicados'"></span>
+                                <span class="ml-2 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold"
+                                    x-text="itemsActuales().length"></span>
+                            </h3>
+                            <button @click="recargarTabla(adminTab)"
+                                class="text-slate-400 hover:text-blue-600 text-sm cursor-pointer" title="Actualizar">
+                                <i class="fas fa-rotate"></i>
+                            </button>
+                        </div>
+
+                        <template x-for="item in itemsActuales()" :key="item.id">
+                            <div
+                                class="bg-white p-4 rounded-2xl shadow border border-slate-100 flex items-center justify-between gap-4 hover:border-blue-200 transition-colors">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                                        <span x-show="item.categoria"
+                                            class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded"
+                                            x-text="item.categoria"></span>
+                                        <span x-show="item.tipo"
+                                            class="text-[10px] text-slate-400 font-bold uppercase border border-slate-200 px-1.5 py-0.5 rounded"
+                                            x-text="item.tipo"></span>
+                                        <span x-show="adminTab === 'blog'"
+                                            class="text-[10px] font-bold uppercase px-2 py-0.5 rounded"
+                                            :class="item.publicado ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'"
+                                            x-text="item.publicado ? 'Publicado' : 'Borrador'"></span>
+                                    </div>
+                                    <p class="font-bold text-slate-900 text-sm truncate" x-text="item.titulo"></p>
+                                    <p class="text-slate-500 text-xs truncate"
+                                        x-text="item.descripcion || item.resumen || item.url || ''"></p>
+                                </div>
+                                <div class="flex gap-1 shrink-0">
+                                    <a x-show="item.enlace || item.url" :href="item.enlace || item.url" target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                        title="Abrir enlace"><i class="fas fa-up-right-from-square text-xs"></i></a>
+                                    <button @click="editar(item)"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
+                                        title="Editar"><i class="fas fa-pen text-xs"></i></button>
+                                    <button @click="eliminar(item)"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                        title="Eliminar"><i class="fas fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div x-show="itemsActuales().length === 0"
+                            class="text-center py-10 bg-white rounded-2xl border border-dashed border-slate-200">
+                            <i class="fas fa-inbox text-slate-300 text-3xl mb-2"></i>
+                            <p class="text-slate-500 text-sm">No hay contenido en esta sección. Agrega el primero con el
+                                formulario.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -611,25 +950,22 @@
             <div>
                 <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">Secciones</h5>
                 <ul class="space-y-1.5 text-xs">
-                    <li><button @click="currentSection = 'inicio'"
-                            class="hover:text-white cursor-pointer">Inicio</button></li>
-                    <li><button @click="currentSection = 'sobre-nosotros'" class="hover:text-white cursor-pointer">Sobre
+                    <li><button @click="irA('inicio')" class="hover:text-white cursor-pointer">Inicio</button></li>
+                    <li><button @click="irA('sobre-nosotros')" class="hover:text-white cursor-pointer">Sobre
                             Nosotros</button></li>
-                    <li><button @click="currentSection = 'recursos'"
-                            class="hover:text-white cursor-pointer">Recursoteca</button></li>
-                    <li><button @click="currentSection = 'biblioteca'"
-                            class="hover:text-white cursor-pointer">Biblioteca Digital</button></li>
+                    <li><button @click="irA('recursos')" class="hover:text-white cursor-pointer">Recursoteca</button>
+                    </li>
+                    <li><button @click="irA('biblioteca')" class="hover:text-white cursor-pointer">Biblioteca
+                            Digital</button></li>
                 </ul>
             </div>
             <div>
                 <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">Comunidad</h5>
                 <ul class="space-y-1.5 text-xs">
-                    <li><button @click="currentSection = 'estudiantes'"
-                            class="hover:text-white cursor-pointer">Estudiantes</button></li>
-                    <li><button @click="currentSection = 'familias'"
-                            class="hover:text-white cursor-pointer">Familias</button></li>
-                    <li><button @click="currentSection = 'docentes'"
-                            class="hover:text-white cursor-pointer">Docentes</button></li>
+                    <li><button @click="irA('estudiantes')" class="hover:text-white cursor-pointer">Estudiantes</button>
+                    </li>
+                    <li><button @click="irA('familias')" class="hover:text-white cursor-pointer">Familias</button></li>
+                    <li><button @click="irA('docentes')" class="hover:text-white cursor-pointer">Docentes</button></li>
                 </ul>
             </div>
             <div>
@@ -640,7 +976,11 @@
         </div>
         <div
             class="container mx-auto px-4 border-t border-slate-800 pt-6 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <p>&copy; 2026 RDORIENTADO. Todos los derechos reservados.</p>
+            <p>&copy; 2026 RDORIENTADO. Todos los derechos reservados. ·
+                <button @click="irA('admin')"
+                    class="hover:text-slate-300 cursor-pointer underline decoration-dotted underline-offset-2">Acceso
+                    administrativo</button>
+            </p>
             <div class="flex space-x-4 text-base">
                 <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
                 <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
@@ -649,7 +989,7 @@
         </div>
     </footer>
 
-    <!-- INTERACTIVE MODAL DETAILdsd -->
+    <!-- MODAL DETALLE DE RECURSO -->
     <div x-show="modalOpen" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" x-cloak
         x-transition>
         <div @click.away="modalOpen = false" class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
@@ -657,10 +997,10 @@
                 class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 cursor-pointer"><i
                     class="fas fa-times text-lg"></i></button>
             <span class="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded"
-                x-text="modalContent.category"></span>
-            <h3 class="text-xl font-bold text-slate-900 mt-2 mb-3" x-text="modalContent.title"></h3>
+                x-text="modalContent.categoria"></span>
+            <h3 class="text-xl font-bold text-slate-900 mt-2 mb-3" x-text="modalContent.titulo"></h3>
             <p class="text-slate-600 text-sm leading-relaxed mb-6"
-                x-text="modalContent.detailedText || modalContent.description"></p>
+                x-text="modalContent.detalle || modalContent.descripcion"></p>
             <div class="flex justify-end">
                 <button @click="modalOpen = false"
                     class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer">Entendido</button>
@@ -670,14 +1010,90 @@
 
     <!-- LOGIC SCRIPTS -->
     <script>
+        /* ============================================================
+           CONFIGURACIÓN DE SUPABASE
+           1. Crea un proyecto gratis en https://supabase.com
+           2. Copia aquí el Project URL y la anon/public key (Settings > API)
+           3. Ejecuta supabase/schema.sql en el SQL Editor
+           4. Crea el usuario admin en Authentication > Users
+        ============================================================ */
+        const SUPABASE_URL = 'https://pulargfbkxscpancgihp.supabase.co';
+        const SUPABASE_ANON_KEY = 'TeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1bGFyZ2Zia3hzY3BhbmNnaWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyNzAwNjUsImV4cCI6MjA5ODg0NjA2NX0.gmu09OUB6Zybu53wyqsFprlOXPn3reYS5x1oMQ_zgWQ';
+
+        const SUPABASE_LISTO = !SUPABASE_URL.includes('TU_SUPABASE');
+        const db = SUPABASE_LISTO
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        const CATEGORIAS = [
+            'Bienestar Emocional', 'Orientación Académica', 'Orientación Vocacional',
+            'Convivencia Escolar', 'Familia y Escuela', 'Hábitos de Estudio',
+            'Proyecto de Vida', 'Desarrollo Personal'
+        ];
+
+        /* Datos de demostración (solo se usan si Supabase no está configurado) */
+        const DEMO = {
+            documentos: [
+                { id: 'd1', categoria: 'Proyecto de Vida', tipo: 'PDF', titulo: 'Cuaderno de Ruta: Construyendo Mi Futuro', descripcion: 'Documento completo con test de intereses, prioridades y metas a mediano plazo para rellenar.', enlace: '#' },
+                { id: 'd2', categoria: 'Familia y Escuela', tipo: 'Guía', titulo: 'Manual de Crianza Positiva en la Era Digital', descripcion: 'Orientaciones específicas para padres sobre cómo establecer límites saludables de pantallas en el hogar.', enlace: '#' },
+                { id: 'd3', categoria: 'Orientación Académica', tipo: 'Plantilla', titulo: 'Planificador Semanal de Asignaturas', descripcion: 'Plantilla editable en formato Word para organizar tareas, exámenes y proyectos con criterios de prioridad.', enlace: '#' }
+            ],
+            recursos: [
+                { id: 'r1', categoria: 'Bienestar Emocional', titulo: 'Gestión de Emociones en el Aula', descripcion: 'Fichas con dinámicas rápidas para que los docentes ayuden a regular estados de frustración en los alumnos.', detalle: 'Este recurso incluye 5 dinámicas prácticas de respiración y enfoque aplicables a los primeros 5 minutos de clase, diseñadas para mejorar los niveles de concentración y reducir el estrés colectivo.' },
+                { id: 'r2', categoria: 'Orientación Vocacional', titulo: 'Mapa Mental de Carreras Técnicas', descripcion: 'Infografía interactiva sobre las profesiones tecnológicas con mayor demanda laboral en la actualidad.', detalle: 'Una completa radiografía de carreras como Desarrollo de Software, Ciberseguridad y Analítica de Datos. Incluye perfiles de habilidades requeridos para cada una.' },
+                { id: 'r3', categoria: 'Hábitos de Estudio', titulo: 'Técnica Pomodoro Aplicada', descripcion: 'Guía paso a paso para organizar jornadas de estudio eficientes evitando la fatiga mental y la procrastinación.', detalle: 'Aprende a estructurar bloques de 25 minutos de enfoque total con descansos de 5 minutos, adaptando este famoso método a las asignaturas de secundaria.' },
+                { id: 'r4', categoria: 'Convivencia Escolar', titulo: 'Acuerdos de Paz en mi Aula', descripcion: 'Plantilla descargable y dinámica grupal para estructurar el reglamento del salón de forma democrática.', detalle: 'Fomenta la autorregulación y la responsabilidad compartida mediante dinámicas donde los propios alumnos proponen y firman sus normas de convivencia.' }
+            ],
+            multimedia: [
+                { id: 'm1', tipo: 'video', titulo: 'Manejo de la Ansiedad ante los Exámenes', url: 'https://www.youtube.com/watch?v=inpok4MKVLM' },
+                { id: 'm2', tipo: 'foto', titulo: 'Taller de Proyecto de Vida con Estudiantes de Secundaria', url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80' },
+                { id: 'm3', tipo: 'foto', titulo: 'Jornada de Convivencia Escolar y Cultura de Paz', url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80' }
+            ],
+            posts: [
+                { id: 'p1', titulo: 'Uso Inteligente de las Redes Sociales en la Adolescencia', resumen: 'Pautas preventivas para guiar a los jóvenes hacia una ciudadanía digital responsable, minimizando riesgos de ciberacoso.', contenido: 'Las redes sociales forman parte de la vida diaria de los adolescentes. En este artículo compartimos pautas preventivas para acompañarlos hacia una **ciudadanía digital responsable**.\n\n## Recomendaciones clave\n\n- Establecer horarios de uso acordados en familia\n- Conversar abiertamente sobre los riesgos del ciberacoso\n- Fomentar el pensamiento crítico frente al contenido', imagen_url: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&q=80', publicado: true, fecha: '2026-06-25' },
+                { id: 'p2', titulo: 'Cómo Crear un Espacio de Estudio Óptimo en el Hogar', resumen: 'El entorno físico afecta directamente el rendimiento académico. Te mostramos cómo adecuar un rincón sin grandes inversiones.', contenido: 'El entorno físico afecta directamente el rendimiento académico. Aquí te mostramos cómo adecuar un rincón de estudio **sin grandes inversiones**.\n\n## Elementos esenciales\n\n- Buena iluminación, preferiblemente natural\n- Silla cómoda y mesa a la altura correcta\n- Lejos de distracciones como el televisor', imagen_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80', publicado: true, fecha: '2026-06-18' }
+            ]
+        };
+
         function appData() {
             return {
+                /* ---- Estado general ---- */
                 currentSection: 'inicio',
                 mobileMenu: false,
                 searchQuery: '',
                 selectedCategory: 'todos',
                 modalOpen: false,
                 modalContent: {},
+                supabaseListo: SUPABASE_LISTO,
+                cargandoPublico: false,
+
+                /* ---- Datos públicos ---- */
+                documentos: [],
+                recursos: [],
+                multimedia: [],
+                posts: [],
+                bibliotecaCategoria: 'todos',
+                postActivo: null,
+
+                /* ---- Contacto ---- */
+                contactForm: { nombre: '', perfil: 'Estudiante', correo: '', mensaje: '' },
+                enviandoConsulta: false,
+                contactoMsg: '',
+
+                /* ---- Admin ---- */
+                session: null,
+                loginForm: { email: '', password: '' },
+                loginError: '',
+                loginLoading: false,
+                adminTab: 'documentos',
+                formData: {},
+                editingId: null,
+                guardando: false,
+                adminMsg: '',
+                adminMsgError: false,
+                consultas: [],
+
+                categories: CATEGORIAS,
 
                 navItems: [
                     { id: 'inicio', name: 'Inicio' },
@@ -692,47 +1108,302 @@
                     { id: 'contacto', name: 'Contacto' }
                 ],
 
-                categories: [
-                    'Bienestar Emocional', 'Orientación Académica', 'Orientación Vocacional',
-                    'Convivencia Escolar', 'Familia y Escuela', 'Hábitos de Estudio',
-                    'Proyecto de Vida', 'Desarrollo Personal'
-                ],
+                /* Configuración de las pestañas CRUD del admin */
+                adminConfig: {
+                    documentos: {
+                        tabla: 'documentos', estado: 'documentos', label: 'Documentos', singular: 'Documento',
+                        icono: 'fa-file-arrow-down', orden: 'creado_en',
+                        campos: [
+                            { k: 'titulo', label: 'Título', tipo: 'text', req: true, ph: 'Ej: Guía de Orientación Vocacional 2026' },
+                            { k: 'descripcion', label: 'Descripción', tipo: 'textarea' },
+                            { k: 'tipo', label: 'Tipo', tipo: 'select', req: true, opciones: ['PDF', 'Word', 'PowerPoint', 'Excel', 'Guía', 'Ficha', 'Plantilla', 'Otro'] },
+                            { k: 'categoria', label: 'Categoría', tipo: 'select', req: true, opciones: CATEGORIAS },
+                            { k: 'enlace', label: 'Enlace de descarga (Drive, MEGA...)', tipo: 'url', req: true }
+                        ]
+                    },
+                    recursos: {
+                        tabla: 'recursos', estado: 'recursos', label: 'Recursos', singular: 'Recurso',
+                        icono: 'fa-lightbulb', orden: 'creado_en',
+                        campos: [
+                            { k: 'titulo', label: 'Título', tipo: 'text', req: true },
+                            { k: 'descripcion', label: 'Descripción corta (tarjeta)', tipo: 'textarea' },
+                            { k: 'detalle', label: 'Texto completo (se muestra en "Leer Más")', tipo: 'textarea', rows: 5 },
+                            { k: 'categoria', label: 'Categoría', tipo: 'select', req: true, opciones: CATEGORIAS }
+                        ]
+                    },
+                    multimedia: {
+                        tabla: 'multimedia', estado: 'multimedia', label: 'Multimedia', singular: 'Contenido',
+                        icono: 'fa-photo-film', orden: 'creado_en',
+                        campos: [
+                            { k: 'titulo', label: 'Título', tipo: 'text', req: true },
+                            { k: 'tipo', label: 'Tipo', tipo: 'select', req: true, opciones: ['video', 'foto'] },
+                            { k: 'url', label: 'URL (YouTube o imagen)', tipo: 'url', req: true, ph: 'https://www.youtube.com/watch?v=...' }
+                        ]
+                    },
+                    blog: {
+                        tabla: 'blog_posts', estado: 'posts', label: 'Blog', singular: 'Artículo',
+                        icono: 'fa-newspaper', orden: 'fecha',
+                        campos: [
+                            { k: 'titulo', label: 'Título', tipo: 'text', req: true },
+                            { k: 'resumen', label: 'Resumen (tarjeta)', tipo: 'textarea' },
+                            { k: 'contenido', label: 'Contenido (acepta Markdown)', tipo: 'textarea', rows: 8, req: true },
+                            { k: 'imagen_url', label: 'URL de imagen de portada', tipo: 'url' },
+                            { k: 'publicado', label: 'Publicado (visible al público)', tipo: 'checkbox' }
+                        ]
+                    }
+                },
 
-                recursosData: [
-                    { id: 1, category: 'Bienestar Emocional', title: 'Gestión de Emociones en el Aula', description: 'Fichas con dinámicas rápidas para que los docentes ayuden a regular estados de frustración en los alumnos.', detailedText: 'Este recurso incluye 5 dinámicas prácticas de respiración y enfoque aplicables a los primeros 5 minutos de clase, diseñadas para mejorar los niveles de concentración y reducir el estrés colectivo.' },
-                    { id: 2, category: 'Orientación Vocacional', title: 'Mapa Mental de Carreras Técnicas', description: 'Infografía interactiva sobre las profesiones tecnológicas con mayor demanda laboral en la actualidad.', detailedText: 'Una completa radiografía de carreras como Desarrollo de Software, Ciberseguridad y Analítica de Datos. Incluye perfiles de habilidades requeridos para cada una.' },
-                    { id: 3, category: 'Hábitos de Estudio', title: 'Técnica Pomodoro Aplicada', description: 'Guía paso a paso para organizar jornadas de estudio eficientes evitando la fatiga mental y la procrastinación.', detailedText: 'Aprende a estructurar bloques de 25 minutos de enfoque total con descansos de 5 minutos, adaptando este famoso método a las asignaturas de secundaria.' },
-                    { id: 4, category: 'Convivencia Escolar', title: 'Acuerdos de Paz en mi Aula', description: 'Plantilla descargable y dinámica grupal para estructurar el reglamento del salón de forma democrática.', detailedText: 'Fomenta la autorregulación y la responsabilidad compartida mediante dinámicas donde los propios alumnos proponen y firman sus normas de convivencia.' }
-                ],
+                /* ============ INIT ============ */
+                async init() {
+                    await this.cargarPublico();
+                    if (!SUPABASE_LISTO) return;
+                    const { data } = await db.auth.getSession();
+                    this.session = data.session;
+                    db.auth.onAuthStateChange((_event, session) => { this.session = session; });
+                },
 
-                bibliotecaDocs: [
-                    { id: 101, category: 'Proyecto de Vida', type: 'PDF', title: 'Cuaderno de Ruta: Construyendo Mi Futuro', description: 'Documento completo con test de intereses, prioridades y metas a mediano plazo para rellenar.' },
-                    { id: 102, category: 'Familia y Escuela', type: 'Guía', title: 'Manual de Crianza Positiva en la Era Digital', description: 'Orientaciones específicas para padres sobre cómo establecer límites saludables de pantallas en el hogar.' },
-                    { id: 103, category: 'Orientación Académica', type: 'Fichas', title: 'Planificador Semanal de Asignaturas', description: 'Plantilla editable en formato Word para organizar tareas, exámenes y proyectos con criterios de prioridad.' }
-                ],
+                irA(seccion) {
+                    this.currentSection = seccion;
+                    this.postActivo = null;
+                    window.scrollTo({ top: 0 });
+                },
 
+                /* ============ CARGA PÚBLICA ============ */
+                async cargarPublico() {
+                    if (!SUPABASE_LISTO) {
+                        this.documentos = DEMO.documentos;
+                        this.recursos = DEMO.recursos;
+                        this.multimedia = DEMO.multimedia;
+                        this.posts = DEMO.posts;
+                        return;
+                    }
+                    this.cargandoPublico = true;
+                    const [docs, recs, media, blog] = await Promise.all([
+                        db.from('documentos').select('*').order('creado_en', { ascending: false }),
+                        db.from('recursos').select('*').order('creado_en', { ascending: false }),
+                        db.from('multimedia').select('*').order('creado_en', { ascending: false }),
+                        db.from('blog_posts').select('*').order('fecha', { ascending: false })
+                    ]);
+                    this.cargandoPublico = false;
+                    if (!docs.error) this.documentos = docs.data || [];
+                    if (!recs.error) this.recursos = recs.data || [];
+                    if (!media.error) this.multimedia = media.data || [];
+                    if (!blog.error) this.posts = (blog.data || []).filter(p => p.publicado || this.session);
+                },
+
+                async recargarTabla(tab) {
+                    if (!SUPABASE_LISTO) return;
+                    if (tab === 'consultas') return this.cargarConsultas();
+                    const cfg = this.adminConfig[tab];
+                    const { data, error } = await db.from(cfg.tabla).select('*')
+                        .order(cfg.orden, { ascending: false });
+                    if (!error) this[cfg.estado] = data || [];
+                },
+
+                /* ============ FILTROS PÚBLICOS ============ */
                 filteredRecursos() {
-                    return this.recursosData.filter(item => {
-                        const matchesCategory = this.selectedCategory === 'todos' || item.category === this.selectedCategory;
-                        const matchesSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                            item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-                        return matchesCategory && matchesSearch;
+                    const q = this.searchQuery.toLowerCase();
+                    return this.recursos.filter(item => {
+                        const okCat = this.selectedCategory === 'todos' || item.categoria === this.selectedCategory;
+                        const okBusq = (item.titulo || '').toLowerCase().includes(q) ||
+                            (item.descripcion || '').toLowerCase().includes(q);
+                        return okCat && okBusq;
                     });
                 },
 
+                filteredBiblioteca() {
+                    if (this.bibliotecaCategoria === 'todos') return this.documentos;
+                    return this.documentos.filter(d => d.categoria === this.bibliotecaCategoria);
+                },
+
+                /* ============ HELPERS ============ */
+                hostName(url) {
+                    if (!url) return 'Enlace';
+                    if (url.includes('drive.google')) return 'Google Drive';
+                    if (url.includes('mega.nz') || url.includes('mega.io')) return 'MEGA';
+                    if (url.includes('dropbox')) return 'Dropbox';
+                    if (url.includes('onedrive') || url.includes('1drv.ms')) return 'OneDrive';
+                    if (url.includes('docs.google')) return 'Google Docs';
+                    return 'Enlace Externo';
+                },
+                hostIcon(url) {
+                    if (!url) return 'fa-link';
+                    if (url.includes('drive.google') || url.includes('docs.google')) return 'fa-cloud-arrow-down';
+                    if (url.includes('mega.nz') || url.includes('mega.io')) return 'fa-cloud';
+                    if (url.includes('dropbox')) return 'fa-box-open';
+                    return 'fa-download';
+                },
+                youtubeId(url) {
+                    if (!url) return null;
+                    const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+                    return m ? m[1] : null;
+                },
+                formatFecha(iso) {
+                    if (!iso) return '';
+                    const d = new Date(iso);
+                    if (isNaN(d)) return iso;
+                    return d.toLocaleDateString('es-DO', { day: 'numeric', month: 'long', year: 'numeric' });
+                },
+                renderMarkdown(texto) {
+                    if (!texto) return '';
+                    try { return window.marked ? marked.parse(texto) : texto; }
+                    catch (e) { return texto; }
+                },
+                abrirPost(post) {
+                    this.postActivo = post;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                /* ============ CONTACTO ============ */
+                async enviarConsulta() {
+                    if (!SUPABASE_LISTO) {
+                        alert('¡Muchas gracias por contactar con RDORIENTADO! Tu consulta ha sido enviada con éxito.');
+                        this.contactForm = { nombre: '', perfil: 'Estudiante', correo: '', mensaje: '' };
+                        return;
+                    }
+                    this.enviandoConsulta = true;
+                    const { error } = await db.from('consultas').insert({
+                        nombre: this.contactForm.nombre.trim(),
+                        perfil: this.contactForm.perfil,
+                        correo: this.contactForm.correo.trim(),
+                        mensaje: this.contactForm.mensaje.trim()
+                    });
+                    this.enviandoConsulta = false;
+                    if (error) {
+                        alert('Hubo un problema enviando tu consulta. Intenta de nuevo.');
+                        return;
+                    }
+                    this.contactoMsg = '¡Gracias por escribirnos! Un orientador te responderá al correo provisto de forma confidencial.';
+                    this.contactForm = { nombre: '', perfil: 'Estudiante', correo: '', mensaje: '' };
+                    setTimeout(() => { this.contactoMsg = ''; }, 6000);
+                },
+
+                /* ============ AUTENTICACIÓN ============ */
+                async login() {
+                    this.loginError = '';
+                    this.loginLoading = true;
+                    const { error } = await db.auth.signInWithPassword({
+                        email: this.loginForm.email,
+                        password: this.loginForm.password
+                    });
+                    this.loginLoading = false;
+                    if (error) {
+                        this.loginError = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+                        return;
+                    }
+                    this.loginForm = { email: '', password: '' };
+                    await this.cargarPublico();
+                    await this.cargarConsultas();
+                },
+
+                async logout() {
+                    await db.auth.signOut();
+                    this.resetForm();
+                    this.consultas = [];
+                    this.irA('inicio');
+                },
+
+                /* ============ ADMIN: CRUD GENÉRICO ============ */
+                seleccionarTab(tab) {
+                    this.adminTab = tab;
+                    this.resetForm();
+                    if (tab === 'consultas') this.cargarConsultas();
+                },
+
+                itemsActuales() {
+                    const cfg = this.adminConfig[this.adminTab];
+                    return cfg ? (this[cfg.estado] || []) : [];
+                },
+
+                async guardar() {
+                    const cfg = this.adminConfig[this.adminTab];
+                    this.adminMsg = '';
+                    this.adminMsgError = false;
+                    this.guardando = true;
+
+                    const payload = {};
+                    for (const campo of cfg.campos) {
+                        let valor = this.formData[campo.k];
+                        if (campo.tipo === 'checkbox') valor = !!valor;
+                        else if (typeof valor === 'string') valor = valor.trim();
+                        payload[campo.k] = valor ?? (campo.tipo === 'checkbox' ? false : null);
+                    }
+
+                    let error;
+                    if (this.editingId) {
+                        ({ error } = await db.from(cfg.tabla).update(payload).eq('id', this.editingId));
+                    } else {
+                        ({ error } = await db.from(cfg.tabla).insert(payload));
+                    }
+                    this.guardando = false;
+
+                    if (error) {
+                        this.adminMsgError = true;
+                        this.adminMsg = 'Error al guardar: ' + error.message;
+                        return;
+                    }
+                    this.adminMsg = this.editingId ? 'Actualizado correctamente.' : 'Publicado correctamente.';
+                    this.resetForm(false);
+                    await this.recargarTabla(this.adminTab);
+                    setTimeout(() => { this.adminMsg = ''; }, 4000);
+                },
+
+                editar(item) {
+                    const cfg = this.adminConfig[this.adminTab];
+                    this.editingId = item.id;
+                    const datos = {};
+                    for (const campo of cfg.campos) datos[campo.k] = item[campo.k] ?? (campo.tipo === 'checkbox' ? false : '');
+                    this.formData = datos;
+                    this.adminMsg = '';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                async eliminar(item) {
+                    const cfg = this.adminConfig[this.adminTab];
+                    if (!confirm('¿Eliminar "' + item.titulo + '"? Esta acción no se puede deshacer.')) return;
+                    const { error } = await db.from(cfg.tabla).delete().eq('id', item.id);
+                    if (error) { alert('Error al eliminar: ' + error.message); return; }
+                    if (this.editingId === item.id) this.resetForm();
+                    await this.recargarTabla(this.adminTab);
+                },
+
+                resetForm(limpiarMsg = true) {
+                    this.editingId = null;
+                    this.formData = {};
+                    if (limpiarMsg) { this.adminMsg = ''; this.adminMsgError = false; }
+                },
+
+                /* ============ ADMIN: CONSULTAS ============ */
+                async cargarConsultas() {
+                    if (!SUPABASE_LISTO || !this.session) return;
+                    const { data, error } = await db.from('consultas').select('*')
+                        .order('creado_en', { ascending: false });
+                    if (!error) this.consultas = data || [];
+                },
+
+                consultasPendientes() {
+                    return this.consultas.filter(c => !c.atendida).length;
+                },
+
+                async toggleAtendida(c) {
+                    const { error } = await db.from('consultas').update({ atendida: !c.atendida }).eq('id', c.id);
+                    if (!error) c.atendida = !c.atendida;
+                },
+
+                async eliminarConsulta(c) {
+                    if (!confirm('¿Eliminar la consulta de "' + c.nombre + '"?')) return;
+                    const { error } = await db.from('consultas').delete().eq('id', c.id);
+                    if (!error) this.consultas = this.consultas.filter(x => x.id !== c.id);
+                },
+
+                /* ============ RECURSOS: MODAL ============ */
                 openModal(item) {
                     this.modalContent = item;
                     this.modalOpen = true;
                 },
 
-                submitForm() {
-                    alert('¡Muchas gracias por contactar con RDORIENTADO! Tu consulta ha sido enviada con éxito. Un orientador te responderá al correo provisto de forma confidencial.');
-                    this.currentSection = 'inicio';
-                },
-
                 toggleAccesibilidad() {
                     document.body.classList.toggle('contrast-125');
-                    alert('Modo de visualización adaptado para accesibilidad visual.');
                 }
             }
         }
